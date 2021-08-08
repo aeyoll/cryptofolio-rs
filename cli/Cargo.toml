@@ -1,0 +1,12 @@
+[package]
+name = "cryptofolio-cli"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+cryptofolio-core = { path = "../core" }
+clogger = { version = "0.1" }
+dotenv = "0.15.0"
+failure = "0.1.8"
+log = "0.4"
+ureq = { version = "*", features = ["json"] }

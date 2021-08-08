@@ -300,12 +300,6 @@ dependencies = [
 
 [[package]]
 name = "ansi_term"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23ac7c30002a5accbf7e8987d0632fa6de155b7c3d39d0067317a391e00a2ef6"
-
-[[package]]
-name = "ansi_term"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee49baf6cb617b853aa8d93bf420db2383fab46d314482ca2803b40d5fde979b"
@@ -835,23 +829,13 @@ version = "2.33.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37e58ac78573c40708d45522f0d80fa2f01cc4f9b4e2bf749807255454312002"
 dependencies = [
- "ansi_term 0.11.0",
+ "ansi_term",
  "atty",
  "bitflags",
  "strsim",
  "textwrap",
  "unicode-width",
  "vec_map",
-]
-
-[[package]]
-name = "clogger"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e46b023981d6e1a0df2197a13c190ee2ecdcc3cb9f7e42b23a9586c7a0d5739"
-dependencies = [
- "ansi_term 0.9.0",
- "log",
 ]
 
 [[package]]
@@ -998,33 +982,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "cryptofolio-cli"
-version = "0.1.0"
-dependencies = [
- "clogger",
- "cryptofolio-core",
- "dotenv",
- "failure",
- "log",
- "ureq",
-]
-
-[[package]]
-name = "cryptofolio-core"
-version = "0.1.0"
-dependencies = [
- "rbatis",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "cryptofolio-server"
+name = "cryptofolio"
 version = "0.1.0"
 dependencies = [
  "actix-web",
  "askama",
- "cryptofolio-core",
+ "chrono",
  "dotenv",
  "env_logger",
  "failure",
