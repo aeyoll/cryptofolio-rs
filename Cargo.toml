@@ -3,5 +3,6 @@
 members = [
     "cli",
     "core",
+    "coinmarketcap",
     "server",
 ]

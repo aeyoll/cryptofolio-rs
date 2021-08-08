@@ -1002,10 +1002,20 @@ name = "cryptofolio-cli"
 version = "0.1.0"
 dependencies = [
  "clogger",
+ "cryptofolio-coinmarketcap",
  "cryptofolio-core",
  "dotenv",
  "failure",
  "log",
+]
+
+[[package]]
+name = "cryptofolio-coinmarketcap"
+version = "0.1.0"
+dependencies = [
+ "failure",
+ "serde",
+ "serde_json",
  "ureq",
 ]
 
@@ -1013,6 +1023,7 @@ dependencies = [
 name = "cryptofolio-core"
 version = "0.1.0"
 dependencies = [
+ "failure",
  "rbatis",
  "serde",
  "serde_json",

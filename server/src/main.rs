@@ -5,9 +5,7 @@ extern crate dotenv;
 
 use askama::Template;
 
-use actix_web::{
-    get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder
-};
+use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use std::env;
 
 #[derive(Template)]
@@ -17,7 +15,7 @@ struct IndexTemplate {}
 #[get("/")]
 async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> impl Responder {
     // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
-    let template = IndexTemplate { };
+    let template = IndexTemplate {};
 
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
