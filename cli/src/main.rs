@@ -19,8 +19,10 @@ fn app() -> Result<(), Error> {
 
     let cmc = Coinmarketcap::new(api_url, &api_key);
     let quotes = cmc.fetch_listings()?;
-    println!("{:?}", quotes);
-    println!("{:?}", api_key);
+
+    for quote in quotes.data {
+        println!("{:?}", quote);
+    }
 
     Ok(())
 }

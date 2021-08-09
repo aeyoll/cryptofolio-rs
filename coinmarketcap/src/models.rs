@@ -22,7 +22,7 @@ pub struct Quote {
 
 #[derive(Deserialize, Debug)]
 pub struct CryptocurrencyListings {
-    data: Vec<Cryptocurrency>,
+    pub data: Vec<Cryptocurrency>,
 }
 
 pub struct Coinmarketcap {
