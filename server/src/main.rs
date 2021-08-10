@@ -12,10 +12,23 @@ use std::env;
 #[template(path = "index.html")]
 struct IndexTemplate {}
 
+#[derive(Template)]
+#[template(path = "add.html")]
+struct AddTemplate {}
+
 #[get("/")]
 async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> impl Responder {
     // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
     let template = IndexTemplate {};
+
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(template.render().unwrap())
+}
+
+#[get("/add")]
+async fn add(rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> impl Responder {
+    let template = AddTemplate {};
 
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
@@ -43,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .data(rb.to_owned())
             .wrap(middleware::Logger::default())
             .service(index)
+            .service(add)
     })
     .bind(&bind)?
     .run()
