@@ -1,39 +1,15 @@
+use askama::Template;
 use rbatis::core::runtime::sync::Arc;
 use rbatis::rbatis::Rbatis;
+use serde::{Deserialize, Serialize};
 
 extern crate dotenv;
 
-use askama::Template;
+mod templates;
+use crate::templates::{CryptocurrencyAddTemplate, IndexTemplate};
 
-use actix_web::{get, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
 use std::env;
-
-#[derive(Template)]
-#[template(path = "index.html")]
-struct IndexTemplate {}
-
-#[derive(Template)]
-#[template(path = "add.html")]
-struct AddTemplate {}
-
-#[get("/")]
-async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> impl Responder {
-    // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
-    let template = IndexTemplate {};
-
-    HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(template.render().unwrap())
-}
-
-#[get("/add")]
-async fn add(rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> impl Responder {
-    let template = AddTemplate {};
-
-    HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(template.render().unwrap())
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -53,12 +29,45 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .data(rb.to_owned())
             .wrap(middleware::Logger::default())
-            .service(index)
-            .service(add)
+            .data(rb.to_owned())
+            .configure(app_config)
     })
     .bind(&bind)?
     .run()
     .await
+}
+
+fn app_config(config: &mut web::ServiceConfig) {
+    config.service(
+        web::scope("")
+            .service(web::resource("/").route(web::get().to(index)))
+            .service(web::resource("/cryptocurrency/add").route(web::post().to(cryptocurency_add))),
+    );
+}
+
+async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> Result<HttpResponse> {
+    // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
+    let template = IndexTemplate {};
+
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(template.render().unwrap()))
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CryptocurrencyAddParams {
+    name: String,
+    spent: f64,
+}
+
+async fn cryptocurency_add(
+    rb: web::Data<Arc<Rbatis>>,
+    params: web::Form<CryptocurrencyAddParams>,
+) -> Result<HttpResponse> {
+    let template = CryptocurrencyAddTemplate {};
+
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(template.render().unwrap()))
 }
