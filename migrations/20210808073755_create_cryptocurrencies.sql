@@ -2,5 +2,6 @@ CREATE TABLE IF NOT EXISTS cryptocurrency (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name VARCHAR NOT NULL,
     price REAL NOT NULL,
+    balance REAL NOT NULL,
     spent REAL NOT NULL
 );

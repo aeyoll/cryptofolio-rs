@@ -6,5 +6,6 @@ pub struct Cryptocurrency {
     pub id: Option<i32>,
     pub name: Option<String>,
     pub price: Option<f64>,
+    pub balance: Option<f64>,
     pub spent: Option<f64>,
 }

@@ -77,6 +77,7 @@ pub async fn index(request: HttpRequest, _rb: Data<Arc<Rbatis>>) -> Result<HttpR
 #[derive(Serialize, Deserialize)]
 pub struct CryptocurrencyAddParams {
     name: String,
+    balance: f64,
     spent: f64,
 }
 
@@ -95,6 +96,7 @@ pub async fn cryptocurency_create(
     let cc = Cryptocurrency {
         id: None,
         name: Some(params.name.to_owned()),
+        balance: Some(params.balance.to_owned()),
         spent: Some(params.spent),
         price: Some(0.0),
     };
