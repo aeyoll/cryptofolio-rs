@@ -19,6 +19,7 @@ use cryptofolio_core::models::Cryptocurrency;
 
 pub mod error;
 pub mod request;
+pub mod templates;
 
 pub type Result<T> = std::result::Result<T, crate::error::Error>;
 
@@ -27,6 +28,9 @@ async fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
     env_logger::init();
     dotenv::dotenv().ok();
+
+    let template_store = crate::templates::load();
+    let templates = template_store.templates.clone();
 
     // set up database connection pool
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL");
@@ -42,6 +46,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
             .data(rb.to_owned())
+            .app_data(templates.clone())
             .configure(app_config)
     })
     .bind(&bind)?
@@ -94,7 +99,7 @@ pub async fn cryptocurency_create(
         price: Some(0.0),
     };
 
-    rb.save(&cc, &[]).await;
+    let _ = rb.save(&cc, &[]).await;
 
     request.flash("Success", "Cryptocurrency succesfully added.")?;
     request.redirect("/")
