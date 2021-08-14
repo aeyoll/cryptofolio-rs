@@ -1,4 +1,5 @@
 extern crate tera;
+use fast_log::plugin::console;
 use rbatis::crud::CRUD;
 use tera::Context;
 
@@ -83,7 +84,7 @@ pub struct CryptocurrencyAddParams {
 }
 
 pub async fn cryptocurency_add(request: HttpRequest) -> Result<HttpResponse> {
-    request.render(200, "cryptocurrency_index.html", {
+    request.render(200, "cryptocurrency_add.html", {
         let context = Context::new();
         context
     })
