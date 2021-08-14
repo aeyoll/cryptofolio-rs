@@ -4,4 +4,25 @@
 
 {% block content %}
 <p>Index</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Balance</th>
+            <th>Spent</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cryptocurrency in cryptocurrencies %}
+        <tr>
+            <td>{{ cryptocurrency.name }}</td>
+            <td>{{ cryptocurrency.price }}</td>
+            <td>{{ cryptocurrency.balance }}</td>
+            <td>{{ cryptocurrency.spent }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

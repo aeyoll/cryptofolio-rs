@@ -66,10 +66,11 @@ fn app_config(config: &mut ServiceConfig) {
     ;
 }
 
-pub async fn index(request: HttpRequest, _rb: Data<Arc<Rbatis>>) -> Result<HttpResponse> {
-    // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
+pub async fn index(request: HttpRequest, rb: Data<Arc<Rbatis>>) -> Result<HttpResponse> {
+    let cryptocurrencies = rb.fetch_list::<Cryptocurrency>().await.unwrap();
     request.render(200, "index.html", {
-        let context = Context::new();
+        let mut context = Context::new();
+        context.insert("cryptocurrencies", &cryptocurrencies);
         context
     })
 }
