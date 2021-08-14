@@ -54,7 +54,6 @@ impl From<tera::Error> for Error {
     }
 }
 
-
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::InternalServerError()
@@ -66,7 +65,8 @@ impl ResponseError for Error {
 /// A generic method for rendering an error to present to the browser.
 /// This should only be called in non-production settings.
 pub(crate) fn render<E: std::fmt::Debug>(e: E) -> String {
-    format!(r#"<!DOCTYPE html>
+    format!(
+        r#"<!DOCTYPE html>
         <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -97,5 +97,7 @@ pub(crate) fn render<E: std::fmt::Debug>(e: E) -> String {
             <code>{:#?}<code>
         </body>
         </html>
-    "#, e)
+    "#,
+        e
+    )
 }

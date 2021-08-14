@@ -1,17 +1,16 @@
 extern crate tera;
-use fast_log::plugin::console;
 use rbatis::crud::CRUD;
 use tera::Context;
 
-use rbatis::rbatis::Rbatis;
 use rbatis::core::runtime::sync::Arc;
+use rbatis::rbatis::Rbatis;
 use serde::{Deserialize, Serialize};
 
 extern crate dotenv;
 use std::env;
 
+use actix_web::web::{get, post, resource, scope, Data, Form, ServiceConfig};
 use actix_web::{middleware, App, HttpRequest, HttpResponse, HttpServer};
-use actix_web::web::{get, post, resource, scope, ServiceConfig, Data, Form};
 
 use crate::request::flash::FlashMessages;
 use crate::request::request::Render;
@@ -58,13 +57,13 @@ async fn main() -> std::io::Result<()> {
 fn app_config(config: &mut ServiceConfig) {
     config
         .service(resource("/").route(get().to(index)))
-        .service(scope("/cryptocurrency")
-            .service(resource("/add")
-                .route(get().to(cryptocurency_add))
-                .route(post().to(cryptocurency_create)),
-            )
-        )
-    ;
+        .service(
+            scope("/cryptocurrency").service(
+                resource("/add")
+                    .route(get().to(cryptocurency_add))
+                    .route(post().to(cryptocurency_create)),
+            ),
+        );
 }
 
 pub async fn index(request: HttpRequest, rb: Data<Arc<Rbatis>>) -> Result<HttpResponse> {

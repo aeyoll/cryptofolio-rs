@@ -13,9 +13,9 @@ pub struct TemplateStore {
 /// used in `app_data()` calls.
 pub fn load() -> TemplateStore {
     let templates_glob = "server/templates/**/*.html";
-    let templates = Arc::new(RwLock::new(Tera::new(&templates_glob).expect("Unable to compile templates!")));
+    let templates = Arc::new(RwLock::new(
+        Tera::new(&templates_glob).expect("Unable to compile templates!"),
+    ));
 
-    TemplateStore {
-        templates,
-    }
+    TemplateStore { templates }
 }
