@@ -1,21 +1,26 @@
-use askama::Template;
-use cryptofolio_core::models::Cryptocurrency;
+extern crate tera;
+use rbatis::crud::CRUD;
+use tera::Context;
+
 use rbatis::rbatis::Rbatis;
-use rbatis::{core::runtime::sync::Arc, crud::CRUD};
+use rbatis::core::runtime::sync::Arc;
 use serde::{Deserialize, Serialize};
 
 extern crate dotenv;
-
-mod templates;
-use crate::request::flash::FlashMessages;
-use crate::templates::{CryptocurrencyAddTemplate, IndexTemplate};
-
-use actix_web::{
-    http::header::ContentType, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
-};
 use std::env;
 
-mod request;
+use actix_web::{middleware, App, HttpRequest, HttpResponse, HttpServer};
+use actix_web::web::{get, post, resource, scope, ServiceConfig, Data, Form};
+
+use crate::request::flash::FlashMessages;
+use crate::request::request::Render;
+
+use cryptofolio_core::models::Cryptocurrency;
+
+pub mod error;
+pub mod request;
+
+pub type Result<T> = std::result::Result<T, crate::error::Error>;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -44,25 +49,24 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-fn app_config(config: &mut web::ServiceConfig) {
-    config.service(
-        web::scope("")
-            .service(web::resource("/").route(web::get().to(index)))
-            .service(
-                web::scope("/cryptocurrency")
-                    .route("/add", web::get().to(cryptocurency_add))
-                    .route("/create", web::post().to(cryptocurency_create)),
-            ),
-    );
+fn app_config(config: &mut ServiceConfig) {
+    config
+        .service(resource("/").route(get().to(index)))
+        .service(scope("/cryptocurrency")
+            .service(resource("/add")
+                .route(get().to(cryptocurency_add))
+                .route(post().to(cryptocurency_create)),
+            )
+        )
+    ;
 }
 
-async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> Result<HttpResponse> {
+pub async fn index(request: HttpRequest, _rb: Data<Arc<Rbatis>>) -> Result<HttpResponse> {
     // let v = rb.fetch_list::<Cryptocurrency>().await.unwrap();
-    let template = IndexTemplate {};
-
-    Ok(HttpResponse::Ok()
-        .set(ContentType::html())
-        .body(template.render().unwrap()))
+    request.render(200, "index.html", {
+        let context = Context::new();
+        context
+    })
 }
 
 #[derive(Serialize, Deserialize)]
@@ -71,21 +75,18 @@ pub struct CryptocurrencyAddParams {
     spent: f64,
 }
 
-async fn cryptocurency_add() -> Result<HttpResponse> {
-    let template = CryptocurrencyAddTemplate {};
-
-    Ok(HttpResponse::Ok()
-        .set(ContentType::html())
-        .body(template.render().unwrap()))
+pub async fn cryptocurency_add(request: HttpRequest) -> Result<HttpResponse> {
+    request.render(200, "cryptocurrency_index.html", {
+        let context = Context::new();
+        context
+    })
 }
 
-async fn cryptocurency_create(
+pub async fn cryptocurency_create(
     request: HttpRequest,
-    rb: web::Data<Arc<Rbatis>>,
-    params: web::Form<CryptocurrencyAddParams>,
+    rb: Data<Arc<Rbatis>>,
+    params: Form<CryptocurrencyAddParams>,
 ) -> Result<HttpResponse> {
-    let template = CryptocurrencyAddTemplate {};
-
     let cc = Cryptocurrency {
         id: None,
         name: Some(params.name.to_owned()),
@@ -96,8 +97,5 @@ async fn cryptocurency_create(
     rb.save(&cc, &[]).await;
 
     request.flash("Success", "Cryptocurrency succesfully added.")?;
-
-    Ok(HttpResponse::Ok()
-        .set(ContentType::html())
-        .body(template.render().unwrap()))
+    request.redirect("/")
 }
