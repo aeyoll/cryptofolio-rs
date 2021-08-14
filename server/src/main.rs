@@ -8,7 +8,9 @@ extern crate dotenv;
 mod templates;
 use crate::templates::{CryptocurrencyAddTemplate, IndexTemplate};
 
-use actix_web::{middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result};
+use actix_web::{
+    http::header::ContentType, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
+};
 use std::env;
 
 #[actix_web::main]
@@ -42,7 +44,11 @@ fn app_config(config: &mut web::ServiceConfig) {
     config.service(
         web::scope("")
             .service(web::resource("/").route(web::get().to(index)))
-            .service(web::resource("/cryptocurrency/add").route(web::post().to(cryptocurency_add))),
+            .service(
+                web::scope("/cryptocurrency")
+                    .route("/add", web::get().to(cryptocurency_add))
+                    .route("/create", web::post().to(cryptocurency_create)),
+            ),
     );
 }
 
@@ -51,7 +57,7 @@ async fn index(_rb: web::Data<Arc<Rbatis>>, _req: HttpRequest) -> Result<HttpRes
     let template = IndexTemplate {};
 
     Ok(HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
+        .set(ContentType::html())
         .body(template.render().unwrap()))
 }
 
@@ -61,13 +67,21 @@ pub struct CryptocurrencyAddParams {
     spent: f64,
 }
 
-async fn cryptocurency_add(
+async fn cryptocurency_add() -> Result<HttpResponse> {
+    let template = CryptocurrencyAddTemplate {};
+
+    Ok(HttpResponse::Ok()
+        .set(ContentType::html())
+        .body(template.render().unwrap()))
+}
+
+async fn cryptocurency_create(
     rb: web::Data<Arc<Rbatis>>,
     params: web::Form<CryptocurrencyAddParams>,
 ) -> Result<HttpResponse> {
     let template = CryptocurrencyAddTemplate {};
 
     Ok(HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
+        .set(ContentType::html())
         .body(template.render().unwrap()))
 }
