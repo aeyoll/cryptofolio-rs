@@ -1,18 +1,21 @@
 use askama::Template;
 use cryptofolio_core::models::Cryptocurrency;
-use rbatis::{core::runtime::sync::Arc, crud::CRUD};
 use rbatis::rbatis::Rbatis;
+use rbatis::{core::runtime::sync::Arc, crud::CRUD};
 use serde::{Deserialize, Serialize};
 
 extern crate dotenv;
 
 mod templates;
+use crate::request::flash::FlashMessages;
 use crate::templates::{CryptocurrencyAddTemplate, IndexTemplate};
 
 use actix_web::{
     http::header::ContentType, middleware, web, App, HttpRequest, HttpResponse, HttpServer, Result,
 };
 use std::env;
+
+mod request;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -77,13 +80,11 @@ async fn cryptocurency_add() -> Result<HttpResponse> {
 }
 
 async fn cryptocurency_create(
+    request: HttpRequest,
     rb: web::Data<Arc<Rbatis>>,
     params: web::Form<CryptocurrencyAddParams>,
 ) -> Result<HttpResponse> {
     let template = CryptocurrencyAddTemplate {};
-
-    println!("Your name is {}", params.name);
-    println!("Your spent is {}", params.spent);
 
     let cc = Cryptocurrency {
         id: None,
@@ -93,6 +94,8 @@ async fn cryptocurency_create(
     };
 
     rb.save(&cc, &[]).await;
+
+    request.flash("Success", "Cryptocurrency succesfully added.")?;
 
     Ok(HttpResponse::Ok()
         .set(ContentType::html())
