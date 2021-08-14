@@ -1,5 +1,6 @@
 use askama::Template;
-use rbatis::core::runtime::sync::Arc;
+use cryptofolio_core::models::Cryptocurrency;
+use rbatis::{core::runtime::sync::Arc, crud::CRUD};
 use rbatis::rbatis::Rbatis;
 use serde::{Deserialize, Serialize};
 
@@ -80,6 +81,18 @@ async fn cryptocurency_create(
     params: web::Form<CryptocurrencyAddParams>,
 ) -> Result<HttpResponse> {
     let template = CryptocurrencyAddTemplate {};
+
+    println!("Your name is {}", params.name);
+    println!("Your spent is {}", params.spent);
+
+    let cc = Cryptocurrency {
+        id: None,
+        name: Some(params.name.to_owned()),
+        spent: Some(params.spent),
+        price: Some(0.0),
+    };
+
+    rb.save(&cc, &[]).await;
 
     Ok(HttpResponse::Ok()
         .set(ContentType::html())

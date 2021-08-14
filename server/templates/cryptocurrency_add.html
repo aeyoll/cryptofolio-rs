@@ -4,4 +4,15 @@
 
 {% block content %}
 <p>Add</p>
+<form action=/cryptocurrency/create method=POST>
+    <label>
+        Name:
+        <input name="name">
+    </label>
+    <label>
+        Spent:
+        <input name="spent" type="number">
+    </label>
+    <button type=submit>Submit form</button>
+</form>
 {% endblock %}
